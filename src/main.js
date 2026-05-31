@@ -65,12 +65,22 @@ async function handleSubmit(event) {
 
     createGallery(images);
 
-    if (totalHits > 15) {
+    const totalPages = Math.ceil(totalHits / 15);
+
+if (currentPage >= totalPages) {
+  iziToast.info({
+    message: "We're sorry, but you've reached the end of search results.",
+  });
+} else {
   showLoadMoreButton();
 }
+    
     }
     catch(error) {
-      console.log(error);
+      iziToast.error({
+    message: 'Something went wrong. Please try again!',
+  });
+
     }
     finally {
       hideLoader();
@@ -80,6 +90,7 @@ async function handleSubmit(event) {
 async function handleLoadMore() {
   currentPage += 1;
 
+  hideLoadMoreButton();
   showLoader();
 
   try {
@@ -96,7 +107,9 @@ async function handleLoadMore() {
         message:
           "We're sorry, but you've reached the end of search results.",
       });
-    }
+    } else {
+  showLoadMoreButton();
+}
     const cards = document.querySelectorAll('.gallery-item');
     if (cards.length === 0) return;
     const cardHeight = cards[0].getBoundingClientRect().height;
@@ -107,7 +120,9 @@ async function handleLoadMore() {
     });
     
   } catch (error) {
-    console.log(error);
+    iziToast.error({
+    message: 'Something went wrong. Please try again!',
+  });
   } finally {
     hideLoader();
   }
